@@ -1,0 +1,26 @@
+# Brute Force
+
+nfrom Crypto.Util.number import getPrime
+
+def brute_force_private_exponent(N, e, M):
+    for d in range(1, N):
+        if pow(M, e * d, N) == M:
+            return d
+    return -1
+
+# Test cases
+N_8bit = getPrime(4) * getPrime(4)  # Example 8-bit modulus
+e_8bit = 3
+M_8bit = 7
+
+N_16bit = getPrime(8) * getPrime(8)  # Example 16-bit modulus
+e_16bit = 17
+M_16bit = 11
+
+# Calculate private exponents
+d_8bit = brute_force_private_exponent(N_8bit, e_8bit, M_8bit)
+d_16bit = brute_force_private_exponent(N_16bit, e_16bit, M_16bit)
+
+# Report runtimes and results
+print(f"8-bit private exponent: {d_8bit}")
+print(f"16-bit private exponent: {d_16bit}")
