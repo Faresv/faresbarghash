@@ -1,0 +1,76 @@
+import random
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def generate_random_prime(bit_length):
+    while True:
+        candidate = random.getrandbits(bit_length)
+        candidate |= (1 << bit_length - 1) | 1
+        if is_prime(candidate):
+            return candidate
+
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcd_extended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+def generate_rsa_keys(bit_length):
+    p = generate_random_prime(bit_length)
+    q = generate_random_prime(bit_length)
+    n = p * q
+    phi_n = (p - 1) * (q - 1)
+    e = random.randint(2, phi_n - 1)
+    while gcd_extended(e, phi_n)[0] != 1:
+        e = random.randint(2, phi_n - 1)
+    _, d, _ = gcd_extended(e, phi_n)
+    d = d % phi_n
+    if d < 0:
+        d += phi_n
+    return (n, e), (n, d)
+
+def generate_test_cases(bit_length, num_cases):
+    test_cases = []
+    for _ in range(num_cases):
+        public_key, _ = generate_rsa_keys(bit_length)
+        test_cases.append(public_key)
+    return test_cases
+
+bit_length = 16
+public_key, private_key = generate_rsa_keys(bit_length)
+print("16 bit Public key:", public_key)
+print("16 bit Private key:", private_key)
+
+bit_length = 8
+public_key, private_key = generate_rsa_keys(bit_length)
+print("8 bit Public key:", public_key)
+print("8 bit Private key:", private_key)
+
+# Generate test cases for 16-bit and 8-bit keys
+num_cases = 5  # Number of test cases per bit length
+
+test_cases_16 = generate_test_cases(16, num_cases)
+test_cases_8 = generate_test_cases(8, num_cases)
+
+# Display the test cases
+print("\nTest Cases for 16-bit Public Keys:")
+for i, case in enumerate(test_cases_16, 1):
+    print(f"Case {i}: N = {case[0]}, E = {case[1]}")
+
+print("\nTest Cases for 8-bit Public Keys:")
+for i, case in enumerate(test_cases_8, 1):
+    print(f"Case {i}: N = {case[0]}, E = {case[1]}")
